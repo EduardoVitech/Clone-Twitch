@@ -1,14 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:twitch_clone/pages/home_page/home_page.dart';
 import 'package:twitch_clone/pages/login_page/login_page.dart';
 import 'package:twitch_clone/pages/onboarding_page/onboarding_page.dart';
 import 'package:twitch_clone/pages/signup_page/signup_pagesignup_page.dart';
+import 'package:twitch_clone/providers/user_provider/user_provider.dart';
 import 'package:twitch_clone/utils/colors/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (_) => UserProvider(),
+    ),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -39,6 +46,7 @@ class MyApp extends StatelessWidget {
         OnboardingPage.routeName: (context) => const OnboardingPage(),
         LoginPage.routeName: (context) => const LoginPage(),
         SignupPage.routeName: (context) => const SignupPage(),
+        HomePage.routeName: (context) => const HomePage(),
       },
     );
   }

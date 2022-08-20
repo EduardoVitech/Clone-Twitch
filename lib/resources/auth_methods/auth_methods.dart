@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:twitch_clone/models/user/user.dart' as model;
+import 'package:twitch_clone/providers/user_provider/user_provider.dart';
 import 'package:twitch_clone/utils/utils/utils.dart';
 
 class AuthMethods {
@@ -27,6 +29,7 @@ class AuthMethods {
           uid: cred.user!.uid,
         );
         await _userref.doc(cred.user!.uid).set(user.toMap());
+        Provider.of<UserProvider>(context, listen: false).setUser(user);
         res = true;
       }
     } on FirebaseAuthException catch (e) {

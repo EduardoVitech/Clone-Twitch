@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:twitch_clone/resources/auth_methods/auth_methods.dart';
 import 'package:twitch_clone/utils/colors/colors.dart';
 import 'package:twitch_clone/widgets/custom_button/custom_button.dart';
 import 'package:twitch_clone/widgets/custom_textfield/custom_textfield.dart';
+import '../home_page/home_page.dart';
 
 class SignupPage extends StatefulWidget {
   static const routeName = '/signup';
@@ -15,6 +17,21 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final AuthMethods _authMethods = AuthMethods();
+
+  void signUpUser() async {
+    bool res = await _authMethods.signUpUsers(
+      context,
+      _emailController.text,
+      _usernameController.text,
+      _passwordController.text,
+    );
+
+    if (res) {
+      Navigator.pushNamed(context, HomePage.routeName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -60,12 +77,15 @@ class _SignupPageState extends State<SignupPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: CustomTextField(controller: _passwordController),
+                child: CustomTextField(
+                  controller: _passwordController,
+                  passwordVisible: true,
+                ),
               ),
               const SizedBox(height: 20),
               CustomButton(
                 text: 'Sign Up',
-                onTap: () {},
+                onTap: signUpUser,
                 colorButton: buttonColor,
                 colortext: Colors.white,
               ),
