@@ -16,6 +16,10 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  loginUser() async {
+    //
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -55,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               CustomButton(
                 text: 'Log In',
-                onTap: () {},
+                onTap: loginUser,
                 colorButton: buttonColor,
                 colortext: Colors.white,
               ),
