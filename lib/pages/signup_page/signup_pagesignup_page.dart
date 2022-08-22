@@ -28,7 +28,7 @@ class _SignupPageState extends State<SignupPage> {
     );
 
     if (res) {
-      Navigator.pushNamed(context, HomePage.routeName);
+      Navigator.pushReplacementNamed(context, HomePage.routeName);
     }
   }
 

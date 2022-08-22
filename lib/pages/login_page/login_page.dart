@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:twitch_clone/pages/home_page/home_page.dart';
+import 'package:twitch_clone/resources/auth_methods/auth_methods.dart';
 import 'package:twitch_clone/utils/colors/colors.dart';
-
 import '../../widgets/custom_button/custom_button.dart';
 import '../../widgets/custom_textfield/custom_textfield.dart';
 
@@ -15,9 +16,18 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthMethods _authMethods = AuthMethods();
 
   loginUser() async {
-    //
+    bool res = await _authMethods.loginUsers(
+      context,
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (res) {
+      Navigator.pushReplacementNamed(context, HomePage.routeName);
+    }
   }
 
   @override

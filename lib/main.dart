@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +7,10 @@ import 'package:twitch_clone/pages/login_page/login_page.dart';
 import 'package:twitch_clone/pages/onboarding_page/onboarding_page.dart';
 import 'package:twitch_clone/pages/signup_page/signup_pagesignup_page.dart';
 import 'package:twitch_clone/providers/user_provider/user_provider.dart';
+import 'package:twitch_clone/resources/auth_methods/auth_methods.dart';
 import 'package:twitch_clone/utils/colors/colors.dart';
+import 'package:twitch_clone/widgets/loading_indicator/loading_indicator.dart';
+import 'models/user/user.dart' as model;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +45,37 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const OnboardingPage(),
       routes: {
         OnboardingPage.routeName: (context) => const OnboardingPage(),
         LoginPage.routeName: (context) => const LoginPage(),
         SignupPage.routeName: (context) => const SignupPage(),
         HomePage.routeName: (context) => const HomePage(),
       },
+      home: FutureBuilder(
+        future: AuthMethods()
+            .getCurrentUser(FirebaseAuth.instance.currentUser != null
+                ? FirebaseAuth.instance.currentUser!.uid
+                : null)
+            .then((value) {
+          if (value != null) {
+            Provider.of<UserProvider>(context, listen: false).setUser(
+              model.User.fromMap(value!),
+            );
+          }
+          return value;
+        }),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingIndicator();
+          }
+
+          if (snapshot.hasData) {
+            return const HomePage();
+          }
+
+          return const OnboardingPage();
+        },
+      ),
     );
   }
 }
