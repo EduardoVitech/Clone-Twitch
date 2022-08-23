@@ -64,7 +64,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: CustomTextField(controller: _passwordController),
+                child: CustomTextField(
+                  controller: _passwordController,
+                  passwordVisible: true,
+                ),
               ),
               const SizedBox(height: 20),
               CustomButton(
