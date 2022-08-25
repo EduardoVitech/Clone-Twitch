@@ -43,6 +43,10 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.copy),
             label: 'Browse',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.copy),
+            label: 'Teste',
+          ),
         ],
       ),
     );
