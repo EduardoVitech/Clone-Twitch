@@ -44,6 +44,8 @@ dependencies:
   dotted_border: ^2.0.0+2
   image_picker: ^0.8.5+3
   file_picker: ^5.0.1
+  agora_rtc_engine: ^5.3.0
+  permission_handler: ^10.0.0
 
 dev_dependencies:
   flutter_test:

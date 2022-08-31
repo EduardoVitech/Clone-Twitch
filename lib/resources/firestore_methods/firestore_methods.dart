@@ -19,7 +19,7 @@ class FirestoreMethods {
       if (title.isNotEmpty && image != null) {
         if (!(await _firestore
                 .collection('livestream')
-                .doc(user.user.uid)
+                .doc('${user.user.uid}${user.user.username}')
                 .get())
             .exists) {
           String thumbnailUrl = await _storageMethods.uploadImageToStorange(
