@@ -47,7 +47,7 @@ class _FeedPageState extends State<FeedPage> {
                     itemCount: snapshot.data.docs.length,
                     itemBuilder: (context, index) {
                       LiveStream post =
-                          LiveStream.fromMap(snapshot.data.docs[index].data);
+                          LiveStream.fromMap(snapshot.data.docs[index].data());
                       return InkWell(
                         onTap: () async {
                           await FirestoreMethods()
@@ -62,7 +62,7 @@ class _FeedPageState extends State<FeedPage> {
                           );
                         },
                         child: Container(
-                          height: size.height * 0.1,
+                          height: size.height * 0.14,
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,

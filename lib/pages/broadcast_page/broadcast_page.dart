@@ -54,7 +54,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
     _joinChannel();
   }
 
-  String baseUrl = "http://twitch-server1973.herokuapp.como/";
+  String baseUrl = "http://twitch-server1973.herokuapp.com";
 
   String? token;
 
@@ -110,7 +110,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
     }
     await _engine.joinChannelWithUserAccount(
       token,
-      'testing123',
+      widget.channelId,
       Provider.of<UserProvider>(context, listen: false).user.uid,
     );
   }
