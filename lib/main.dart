@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twitch_clone/pages/home_page/home_page.dart';
@@ -14,6 +15,19 @@ import 'models/user/user.dart' as model;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyA-APhpVFMB7vAwNzfaF6t6BJsu1TYCiMo",
+          authDomain: "twitch-clone-424dc.firebaseapp.com",
+          projectId: "twitch-clone-424dc",
+          storageBucket: "twitch-clone-424dc.appspot.com",
+          messagingSenderId: "365248563748",
+          appId: "1:365248563748:web:1e96c36c03dc37e6bc26b1"),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(

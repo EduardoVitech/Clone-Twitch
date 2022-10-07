@@ -68,7 +68,7 @@ class _FeedPageState extends State<FeedPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AspectRatio(
-                                aspectRatio: 16 / 9,
+                                aspectRatio: 14 / 9,
                                 child: Image.network(post.image),
                               ),
                               const SizedBox(width: 10),
