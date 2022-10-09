@@ -10,6 +10,9 @@ import 'package:twitch_clone/providers/user_provider/user_provider.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:twitch_clone/resources/firestore_methods/firestore_methods.dart';
+import 'package:twitch_clone/responsive/responsive_layout.dart';
+import 'package:twitch_clone/utils/colors/colors.dart';
+import 'package:twitch_clone/widgets/custom_button/custom_button.dart';
 import '../../widgets/chat/chat.dart';
 import 'package:http/http.dart' as http;
 
@@ -154,32 +157,124 @@ class _BroadcastPageState extends State<BroadcastPage> {
         return Future.value(true);
       },
       child: Scaffold(
+        bottomNavigationBar: widget.isBroadcaster
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: CustomButton(
+                  colorButton: buttonColor,
+                  colortext: Colors.red,
+                  text: 'End Stream',
+                  onTap: _leaveChannel,
+                ),
+              )
+            : null,
         body: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              _renderVideo(user),
-              if ("${user.uid}${user.username}" == widget.channelId)
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: _switchCamera,
-                      child: const Text('Switch Camera'),
-                    ),
-                    InkWell(
-                      onTap: onToggleMute,
-                      child: Text(isMuted ? 'Unmute' : 'Mute'),
-                    ),
-                  ],
+          child: ResponsiveLayout(
+            desktopBody: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      _renderVideo(user),
+                      if ("${user.uid}${user.username}" == widget.channelId)
+                        const SizedBox(height: 20),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: _switchCamera,
+                            child: const CircleAvatar(
+                              backgroundColor: buttonColor,
+                              child: Icon(
+                                Icons.cameraswitch_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          InkWell(
+                            onTap: onToggleMute,
+                            child: CircleAvatar(
+                              backgroundColor: buttonColor,
+                              child: Icon(
+                                isMuted ? Icons.mic_off : Icons.mic,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          InkWell(
+                            onTap: onToggleMute,
+                            child: const CircleAvatar(
+                              backgroundColor: buttonColor,
+                              child: Icon(
+                                Icons.screen_share,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              Expanded(
-                child: Chat(
-                  channelId: widget.channelId,
+                Chat(channelId: widget.channelId),
+              ],
+            ),
+            mobileBody: Column(
+              children: [
+                _renderVideo(user),
+                const SizedBox(height: 15),
+                if ("${user.uid}${user.username}" == widget.channelId)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: _switchCamera,
+                        child: const CircleAvatar(
+                          backgroundColor: buttonColor,
+                          child: Icon(
+                            Icons.cameraswitch_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      InkWell(
+                        onTap: onToggleMute,
+                        child: CircleAvatar(
+                          backgroundColor: buttonColor,
+                          child: Icon(
+                            isMuted ? Icons.mic_off : Icons.mic,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      InkWell(
+                        onTap: onToggleMute,
+                        child: const CircleAvatar(
+                          backgroundColor: buttonColor,
+                          child: Icon(
+                            Icons.screen_share,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                Expanded(
+                  child: Chat(
+                    channelId: widget.channelId,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -188,7 +283,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
 
   _renderVideo(user) {
     return AspectRatio(
-      aspectRatio: 16 / 9,
+      aspectRatio: 17 / 9,
       child: "${user.uid}${user.username}" == widget.channelId
           ? RtcLocalView.SurfaceView(
               zOrderMediaOverlay: true,
