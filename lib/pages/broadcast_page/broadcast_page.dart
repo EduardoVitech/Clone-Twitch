@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
   List<int> remoteUid = [];
   bool switchCamera = true;
   bool isMuted = false;
+  bool isScreenSharing = false;
 
   @override
   void initState() {
@@ -134,6 +137,35 @@ class _BroadcastPageState extends State<BroadcastPage> {
     await _engine.muteLocalAudioStream(isMuted);
   }
 
+  _startScreenShare() async {
+    final helper = await _engine.getScreenShareHelper(
+        appGroup: kIsWeb || Platform.isWindows ? null : 'io.agora');
+    await helper.disableAudio();
+    await helper.enableAudio();
+    await helper.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    await helper.setClientRole(ClientRole.Broadcaster);
+    var windowId = 0;
+    var random = Random();
+    if (!kIsWeb &&
+        (Platform.isWindows || Platform.isMacOS || Platform.isAndroid)) {
+      final windows = _engine.enumerateWindows();
+      if (windows.isNotEmpty) {
+        final index = random.nextInt(windows.length - 1);
+        debugPrint('Screensharing window with index $index');
+        windowId = windows[index].id;
+      }
+    }
+    await helper.startScreenCaptureByWindowId(windowId);
+    setState(() {
+      isScreenSharing = true;
+    });
+    await helper.joinChannelWithUserAccount(
+      token,
+      widget.channelId,
+      Provider.of<UserProvider>(context, listen: false).user.uid,
+    );
+  }
+
   _leaveChannel() async {
     await _engine.leaveChannel();
     if ('${Provider.of<UserProvider>(context, listen: false).user.uid}${Provider.of<UserProvider>(context, listen: false).user.username}' ==
@@ -207,7 +239,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                           ),
                           const SizedBox(width: 20),
                           InkWell(
-                            onTap: onToggleMute,
+                            onTap: _startScreenShare,
                             child: const CircleAvatar(
                               backgroundColor: buttonColor,
                               child: Icon(
@@ -257,7 +289,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                       ),
                       const SizedBox(width: 20),
                       InkWell(
-                        onTap: onToggleMute,
+                        onTap: _startScreenShare,
                         child: const CircleAvatar(
                           backgroundColor: buttonColor,
                           child: Icon(
