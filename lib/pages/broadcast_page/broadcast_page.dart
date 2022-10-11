@@ -166,6 +166,19 @@ class _BroadcastPageState extends State<BroadcastPage> {
     );
   }
 
+  _stopScreenShare() async {
+    final helper = await _engine.getScreenShareHelper();
+    await helper.destroy().then(
+      (value) {
+        setState(() {
+          isScreenSharing = false;
+        });
+      },
+    ).catchError((err) {
+      debugPrint('StopScreenShare $err');
+    });
+  }
+
   _leaveChannel() async {
     await _engine.leaveChannel();
     if ('${Provider.of<UserProvider>(context, listen: false).user.uid}${Provider.of<UserProvider>(context, listen: false).user.username}' ==
@@ -194,7 +207,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: CustomButton(
                   colorButton: buttonColor,
-                  colortext: Colors.red,
+                  colortext: Colors.white,
                   text: 'End Stream',
                   onTap: _leaveChannel,
                 ),
@@ -208,7 +221,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                 Expanded(
                   child: Column(
                     children: [
-                      _renderVideo(user),
+                      _renderVideo(user, isScreenSharing),
                       if ("${user.uid}${user.username}" == widget.channelId)
                         const SizedBox(height: 20),
                       Row(
@@ -239,11 +252,15 @@ class _BroadcastPageState extends State<BroadcastPage> {
                           ),
                           const SizedBox(width: 20),
                           InkWell(
-                            onTap: _startScreenShare,
-                            child: const CircleAvatar(
+                            onTap: isScreenSharing
+                                ? _stopScreenShare
+                                : _startScreenShare,
+                            child: CircleAvatar(
                               backgroundColor: buttonColor,
                               child: Icon(
-                                Icons.screen_share,
+                                isScreenSharing
+                                    ? Icons.stop_screen_share
+                                    : Icons.screen_share,
                                 color: Colors.white,
                               ),
                             ),
@@ -258,7 +275,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
             ),
             mobileBody: Column(
               children: [
-                _renderVideo(user),
+                _renderVideo(user, isScreenSharing),
                 const SizedBox(height: 15),
                 if ("${user.uid}${user.username}" == widget.channelId)
                   Row(
@@ -289,11 +306,15 @@ class _BroadcastPageState extends State<BroadcastPage> {
                       ),
                       const SizedBox(width: 20),
                       InkWell(
-                        onTap: _startScreenShare,
-                        child: const CircleAvatar(
+                        onTap: isScreenSharing
+                            ? _stopScreenShare
+                            : _startScreenShare,
+                        child: CircleAvatar(
                           backgroundColor: buttonColor,
                           child: Icon(
-                            Icons.screen_share,
+                            isScreenSharing
+                                ? Icons.stop_screen_share
+                                : Icons.screen_share,
                             color: Colors.white,
                           ),
                         ),
@@ -313,25 +334,33 @@ class _BroadcastPageState extends State<BroadcastPage> {
     );
   }
 
-  _renderVideo(user) {
+  _renderVideo(user, isScreenSharing) {
     return AspectRatio(
       aspectRatio: 17 / 9,
       child: "${user.uid}${user.username}" == widget.channelId
-          ? RtcLocalView.SurfaceView(
-              zOrderMediaOverlay: true,
-              zOrderOnTop: true,
-            )
-          : remoteUid.isNotEmpty
+          ? isScreenSharing
               ? kIsWeb
-                  ? RtcRemoteView.SurfaceView(
-                      uid: remoteUid[0],
-                      channelId: widget.channelId,
-                    )
-                  : RtcRemoteView.TextureView(
-                      uid: remoteUid[0],
-                      channelId: widget.channelId,
-                    )
-              : Container(),
+                  ? const RtcLocalView.SurfaceView.screenShare()
+                  : const RtcLocalView.TextureView.screenShare()
+              : const RtcLocalView.SurfaceView(
+                  zOrderMediaOverlay: true,
+                  zOrderOnTop: true,
+                )
+          : isScreenSharing
+              ? kIsWeb
+                  ? const RtcLocalView.SurfaceView.screenShare()
+                  : const RtcLocalView.TextureView.screenShare()
+              : remoteUid.isNotEmpty
+                  ? kIsWeb
+                      ? RtcRemoteView.SurfaceView(
+                          uid: remoteUid[0],
+                          channelId: widget.channelId,
+                        )
+                      : RtcRemoteView.TextureView(
+                          uid: remoteUid[0],
+                          channelId: widget.channelId,
+                        )
+                  : Container(),
     );
   }
 }
